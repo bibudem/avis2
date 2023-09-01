@@ -12,7 +12,6 @@ export default function DashboardLayout({ children, modal }) {
           alignItems: 'center',
         }}
       >
-        <h1>Admin page</h1>
       </Box>
       {children}
       {modal}

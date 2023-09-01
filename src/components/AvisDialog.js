@@ -19,6 +19,8 @@ export default function AvisDialog({ avis }) {
     <Dialog
       open={true}
       fullScreen={isSmall}
+      fullWidth
+      maxWidth='xl'
     >
       <IconButton
         aria-label='fermer'

@@ -9,7 +9,7 @@ export default function NextAppDirEmotionCacheProvider(props) {
   const { options, CacheProvider = DefaultCacheProvider, children } = props
 
   const [{ cache, flush }] = React.useState(() => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+    // eslint-disable-next-line
     const cache = createCache(options)
     cache.compat = true
     const prevInsert = cache.insert
@@ -21,7 +21,7 @@ export default function NextAppDirEmotionCacheProvider(props) {
       }
       return prevInsert(...args)
     }
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+    // eslint-disable-next-line
     const flush = () => {
       const prevInserted = inserted
       inserted = []

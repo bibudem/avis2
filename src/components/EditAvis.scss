@@ -1,0 +1,14 @@
+.ck-powered-by {
+  display: none;
+}
+
+.ck-editor {
+  &__editable {
+    transition: all 150ms;
+
+    &:not(.ck-focused):hover {
+      cursor: pointer;
+      border-color: hsla(218, 82%, 57%, 0.35);
+    }
+  }
+}

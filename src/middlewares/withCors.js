@@ -1,7 +1,8 @@
 export const withCors = (next) => {
   return async (request, _next) => {
     const res = await next(request, _next)
-    if (request.nextUrl.pathname.startsWith('/api')) {
+    const pathname = request.nextUrl.pathname
+    if (pathname.startsWith('/api') || pathname.startsWith('/site-web')) {
       if (res) {
         // add the CORS headers to the response
         res.headers.append('Access-Control-Allow-Credentials', "true")

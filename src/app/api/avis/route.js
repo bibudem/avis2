@@ -35,14 +35,14 @@ export async function GET(request) {
       return new NextResponse(null, { status: 204, headers })
     }
 
-    const avisList = await Avis.find().sort({ active: -1, updated: -1 })
+    const avisList = await Avis.find().sort({ active: -1, updated: -1 }).limit(15)
 
     return respond(avisList)
 
 
   } catch (error) {
     console.error('Request error at %s: %o', request.nextUrl.href, error)
-    console.log(error.name)
+
     const acceptsJson = request.headers.has('accept') && request.headers.get('accept').startsWith('application/json')
 
     if (acceptsJson) {

@@ -1,4 +1,5 @@
 import { Roboto } from 'next/font/google'
+import { extendTheme } from '@mui/material-next/styles'
 import { createTheme } from '@mui/material/styles'
 import { red } from '@mui/material/colors'
 
@@ -10,21 +11,28 @@ export const roboto = Roboto({
 })
 
 // Create a theme instance.
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#ee6102',
-    },
-    secondary: {
-      main: '#27408d',
-    },
-    error: {
-      main: red.A400,
-    },
-  },
-  typography: {
-    fontFamily: roboto.style.fontFamily,
-  },
+const theme = extendTheme({
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: '#ee6102',
+        },
+        secondary: {
+          main: '#27408d',
+        },
+        error: {
+          main: red.A400,
+        },
+        background: {
+          default: 'rgb(246, 245, 244)'
+        }
+      },
+      typography: {
+        fontFamily: roboto.style.fontFamily,
+      },
+    }
+  }
 })
 
 export default theme

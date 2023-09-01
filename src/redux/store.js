@@ -10,6 +10,6 @@ const store = configureStore({
   }
 })
 
-export function Providers(props) {
+export function StoreProvider(props) {
   return <Provider store={store}>{props.children}</Provider>
 }
