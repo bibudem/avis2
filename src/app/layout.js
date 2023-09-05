@@ -7,13 +7,12 @@ import ChecklistIcon from '@mui/icons-material/Checklist'
 import SettingsIcon from '@mui/icons-material/Settings'
 import SupportIcon from '@mui/icons-material/Support'
 import LogoutIcon from '@mui/icons-material/Logout'
-// import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import AppBar from '@/components/AppBar'
-// import { StoreProvider } from '@/redux/store'
-import './globals.css'
 import { Providers } from './Providers'
+import './globals.css'
 
-const roboto = Roboto({ weight: ['300', '400', '500'], subsets: ['latin'] })
+// const roboto = Roboto({ weight: ['300', '400', '500'], subsets: ['latin'] })
+// console.log('roboto: %o', roboto)
 
 const DRAWER_WIDTH = 240
 
@@ -49,10 +48,8 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="fr">
-      <body className={roboto.className}>
+      <body>
         <Providers>
-          {/* <ThemeRegistry> */}
-          {/* <StoreProvider> */}
           <AppBar />
           <Drawer
             sx={{
@@ -101,7 +98,7 @@ export default function RootLayout({ children }) {
             sx={{
               flexGrow: 1,
               // mt: ['48px', '56px', '64px'],
-              pt: 'calc(40px + .5rem)',
+              pt: [0, 0, 'calc(40px - 1rem)'],
               px: [1.5, 2, 3],
               pb: [1.5, 2, 3],
               maxWidth: 1415,
@@ -111,8 +108,6 @@ export default function RootLayout({ children }) {
           >
             {children}
           </Box>
-          {/* </StoreProvider> */}
-          {/* </ThemeRegistry> */}
         </Providers>
       </body>
     </html>

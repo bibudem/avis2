@@ -61,17 +61,15 @@ export async function save(id, message) {
 }
 
 export async function setActive(id) {
-  console.log('from server action: %o', id)
+
   try {
     await dbConnect()
 
-    await Avis.setActive(id)
+    const result = await Avis.setActive(id)
 
     revalidatePath('/admin')
 
-    return {
-      success: true
-    }
+    return result
 
   } catch (error) {
     console.error(error)
@@ -86,11 +84,22 @@ export async function del(id) {
   try {
     await dbConnect()
 
-    await Avis.findByIdAndDelete(id)
+    const result = await Avis.findByIdAndDelete(id)
+
+    const ret = {
+      success: !!result
+    }
+
+    if (!result) {
+      ret.message = 'Cet avis n\'existe pas.'
+    }
 
     revalidatePath('/admin')
 
+    return ret
+
   } catch (error) {
+
     return {
       success: false,
       error

@@ -23,8 +23,15 @@ const AvisSchema = new mongoose.Schema({
       updatedAt: 'updated'
     },
     toObject: {
-      versionKey: false,
+      // versionKey: false,
       // flattenObjectIds: true
+      transform(doc, { _id, message, active }) {
+        return {
+          id: _id.toString(),
+          message,
+          active
+        }
+      }
     },
     statics: {
       getList() {
@@ -42,18 +49,20 @@ const AvisSchema = new mongoose.Schema({
         }
 
         try {
+
           doc.active = true
 
           await doc.save()
 
         } catch (error) {
+
           return {
             success: false,
-            message: error.message
+            message: error.errors['active'].message
           }
         }
 
-        await this.findManyAndUpdate({ active: true }, { active: false })
+        await this.updateMany({ active: true, _id: { $ne: id } }, { active: false })
 
         return {
           success: true

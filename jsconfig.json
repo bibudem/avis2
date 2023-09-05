@@ -2,29 +2,8 @@
   "compilerOptions": {
     "baseUrl": "src/",
     "paths": {
-      "@/actions": [
-        "actions"
-      ],
-      "@/components/*": [
-        "components/*"
-      ],
-      "@/config/*": [
-        "config/*"
-      ],
-      "@/hooks/*": [
-        "hooks/*"
-      ],
-      "@/lib/*": [
-        "lib/*"
-      ],
-      "@/middlewares/*": [
-        "middlewares/*"
-      ],
-      "@/models/*": [
-        "models/*"
-      ],
-      "@/redux/*": [
-        "redux/*"
+      "@/*": [
+        "*"
       ]
     }
   }

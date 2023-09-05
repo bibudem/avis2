@@ -23,6 +23,14 @@ export default function CustomCKEditor({ data, onSave = () => { } }) {
             evt.stop()
           }, { priority: 'high' })
 
+
+        editor.editing.view.document.on(
+          'paste',
+          (eventInfo, data) => {
+            console.log('[paste] eventInfo: %o, data: %o', eventInfo, data)
+          }
+        )
+
         // CKEditorInspector.attach(editor)
 
         editor.on('save', event => {

@@ -16,14 +16,14 @@ export default function EditAvis({ avis }) {
   // async function onSave(message) {
   //   console.log('I AM SAVE!!! %o', message)
   //   startTransition(async function () {
-  //     const result = await save(avis._id, message)
+  //     const result = await save(avis.id, message)
   //     console.log('result: %o', result)
   //   })
   // }
 
   async function onSave(message) {
     console.log('I AM SAVE!!! %o', message)
-    const result = await save(avis._id, message)
+    const result = await save(avis.id, message)
     console.log('result: %o', result)
 
     if (result.success) {

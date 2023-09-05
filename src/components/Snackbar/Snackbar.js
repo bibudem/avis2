@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
-import { IconButton, Snackbar as MUISnackbar, Portal } from '@mui/material'
+import { Alert, IconButton, Snackbar as MUISnackbar, Portal } from '@mui/material'
 import Slide from '@mui/material/Slide'
 import { snackbarAutoHideDuration } from '@/config/app'
 import { Close } from '@mui/icons-material'
@@ -17,17 +17,19 @@ export default function SnackbarProvider({ children }) {
   const [_showCloseButton, setShowCloseButton] = useState(false)
   const [_action, setAction] = useState(null)
   const [_autoHide, setAutoHide] = useState(true)
+  const [_severity, setSeverity] = useState(undefined) /** success | error | warning | info */
   const [autoHideDuration, setAutoHideDuration] = useState(null)
 
   // 
 
-  function openSnackbar({ autoHide = true, message, action = null, showCloseButton = false }) {
+  function openSnackbar({ autoHide = true, message, action = null, showCloseButton = false, severity = undefined }) {
 
     setMessage(message)
     setShowCloseButton(showCloseButton)
     setAction(action)
-    setAutoHide(autoHide)
+    setAutoHide(severity ? false : autoHide)
     setOpen(true)
+    setSeverity(severity)
   }
 
   function closeSnackbar() {
@@ -69,10 +71,11 @@ export default function SnackbarProvider({ children }) {
       <Portal>
         <MUISnackbar
           autoHideDuration={autoHideDuration}
-          message={_message}
+          message={!_severity && _message}
           open={open}
           ContentProps={{ sx: { alignItems: 'flex-start' } }}
           sx={{
+            fontWeight: 500,
             '& .MuiSnackbarContent-action': {
               pt: .5
             }
@@ -96,7 +99,20 @@ export default function SnackbarProvider({ children }) {
           }
           TransitionComponent={SlideUp}
           onClose={onSnackbarClose}
-        />
+        >
+          {
+            _severity && (
+              <Alert
+                severity={_severity}
+                variant='filled'
+                elevation={6}
+                action={<CloseButton />}
+              >
+                {_message}
+              </Alert>
+            )
+          }
+        </MUISnackbar>
       </Portal>
     </SnackbarContext.Provider>
   )

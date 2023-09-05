@@ -1,18 +1,14 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { TransitionGroup } from 'react-transition-group'
-import { Alert, AlertTitle, Card, CardActions, CardContent, Collapse, Fade, FormControlLabel, IconButton, List, ListItem, Skeleton, Switch, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Collapse, Fade, IconButton, List, Skeleton, useTheme } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import Close from '@mui/icons-material/Close'
-import DeleteRounded from '@mui/icons-material/Delete'
-import EditAvis from '@/components/EditAvis'
-import { useSnackbar } from '@/components/Snackbar/useSnackbar'
 import { withSnackbar } from '@/hooks/withSnackbar'
 import { useDataLastUpdated } from '@/hooks/useDataLastUpdated'
-import { useSmall } from '@/hooks/useSmall'
-import { setActive } from '@/actions'
+import { AvisListItem } from './AvisListItem'
 
 export default withSnackbar(function AvisList({ showSnackbar, children }) {
 
@@ -121,8 +117,8 @@ export default withSnackbar(function AvisList({ showSnackbar, children }) {
       <TransitionGroup>
         {
           avisList.map(avis => (
-            <Collapse key={avis._id}>
-              <AvisListItem avis={avis} onDelete={() => onDeleteBtnClick(avis._id)} />
+            <Collapse key={avis.id}>
+              <AvisListItem avis={avis} onDelete={() => onDeleteBtnClick(avis.id)} />
             </Collapse>
           ))
         }
@@ -130,89 +126,3 @@ export default withSnackbar(function AvisList({ showSnackbar, children }) {
     </List>
   )
 })
-
-export function AvisListItem({ avis, onDelete = () => { } }) {
-  const [checked, setChecked] = useState(avis.active)
-  const isSmall = useSmall()
-  const [openSnackbar, closeSnackbar] = useSnackbar()
-
-  async function onAvisItemChange() {
-    setChecked(!checked)
-    const result = await setActive(avis._id)
-
-    console.log('result: %o', result)
-
-    if (!result.success) {
-      setChecked(checked)
-      openSnackbar(result.message, { autoHide: false })
-    }
-  }
-
-  useMemo(() => {
-    setChecked(avis.active)
-  }, [avis.active])
-
-  return (
-    <ListItem
-      sx={{ px: 0 }}
-    >
-      <Card
-        variant='outlined'
-        sx={{ width: '100%' }}
-      >
-        <Grid
-          container
-          direction={isSmall ? 'column-reverse' : 'row'}
-          wrap='norwap'
-          alignItems={isSmall ? 'stretch' : 'center'}
-          // border={isSmall ? null : 1}
-          // borderColor='divider'
-          component={CardContent}
-        >
-          <Grid xs
-            border={isSmall ? 1 : null}
-            borderColor='divider'
-          >
-            <EditAvis avis={avis} />
-          </Grid>
-          <Grid
-            alignSelf={isSmall && 'flex-end'}
-            component={CardActions}
-          >
-            <FormControlLabel
-              control={<Switch
-                checked={checked}
-                onChange={() => onAvisItemChange(avis)}
-              />}
-              label={checked ? 'Actif' : '\u00a0'}
-              labelPlacement='bottom'
-              componentsProps={{
-                typography: {
-                  variant: 'caption',
-                  color: 'text.secondary'
-                }
-              }}
-            />
-
-            <IconButton
-              aria-label='supprimer'
-              // size='small'
-              // edge='end'
-              sx={{
-                opacity: .4,
-                transitionProperty: 'all',
-                ':hover': {
-                  opacity: 1
-                }
-              }}
-              onClick={() => onDelete()}
-            >
-              <DeleteRounded fontSize='inherit' />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <span />
-      </Card>
-    </ListItem>
-  )
-}

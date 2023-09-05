@@ -4,9 +4,11 @@ import { useTransition } from 'react'
 import { Fab } from '@mui/material'
 import Add from '@mui/icons-material/Add'
 import { create } from '@/actions'
+import { useSmall } from '@/hooks/useSmall'
 
 export default function AddAvisButton() {
   const [isPending, startTransition] = useTransition()
+  const isSmall = useSmall()
 
   function onClick() {
     startTransition(() => {
@@ -24,9 +26,9 @@ export default function AddAvisButton() {
     <Fab
       color='primary'
       sx={{
-        position: 'absolute',
-        bottom: '2rem',
-        right: '2rem',
+        position: 'fixed',
+        bottom: isSmall ? '1rem' : '2rem',
+        right: isSmall ? '1rem' : '2rem',
       }}
       onClick={onClick}
     >
