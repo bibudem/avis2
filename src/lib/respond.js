@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 
-export function respond(response = null, options = { status: 200 }) {
+const headers = {
+  'Content-Type': 'text/html; charset=utf-8'
+}
 
+export function respond(body = null, options = { status: 200 }) {
 
   /*
    * return respond({ foo: 'bar' }, 201)
@@ -12,21 +15,26 @@ export function respond(response = null, options = { status: 200 }) {
     }
   }
 
+  let { status = 200, accept } = options
+
   /*
    * return respond(201)
    */
-  if (typeof response === 'number') {
-    options.status = response
-    response = null
+  if (typeof body === 'number') {
+    status = body
+    body = null
   }
 
-  if (response) {
-    response = {
-      success: options.status < 300 ? true : false,
-      data: response
+  const acceptsJson = accept?.startsWith('application/json')
+
+  if (acceptsJson) {
+    body = {
+      success: status < 300 ? true : false,
+      data: body
     }
+
+    return NextResponse.json(body, { status })
   }
 
-
-  return NextResponse.json(response, options)
+  return new NextResponse(body.message, { status, headers })
 }

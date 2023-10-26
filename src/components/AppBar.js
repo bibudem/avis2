@@ -1,29 +1,40 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { AppBar as MuiAppBar, Avatar, Toolbar, Box, Drawer, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { signOut, useSession } from 'next-auth/react'
+import { AppBar as MuiAppBar, Avatar, Toolbar, Box, IconButton, Menu, MenuItem, Typography, ListItemIcon } from '@mui/material'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import LogoutIcon from '@mui/icons-material/Logout'
+import Logout from '@mui/icons-material/Logout'
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 export default function AppBar({ children }) {
 
+  const { data: session, status } = useSession()
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
+  const [nameFirstLetter, setNameFirstLetter] = useState()
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget)
   }
 
-  const handleCloseUserMenu = () => {
+  function closeUserMenu() {
     setAnchorElUser(null)
   }
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
+  function onLogoutBtnClick() {
+    signOut({ callbackUrl: '/' })
+    closeUserMenu()
   }
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      setNameFirstLetter(session.user.name[0])
+      console.log(session)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status])
 
   return (
     <>
@@ -39,11 +50,15 @@ export default function AppBar({ children }) {
             sx={{ flexGrow: 1 }}
           />
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <Avatar sx={{
+                bgcolor: 'background.paper',
+                color: 'grey.600'
+              }}
+              >
+                {nameFirstLetter}
+              </Avatar>
+            </IconButton>
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -58,13 +73,12 @@ export default function AppBar({ children }) {
                 horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={closeUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={onLogoutBtnClick}>
+                <ListItemIcon><Logout /> </ListItemIcon>
+                <Typography textAlign="center">Déconnexion</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>

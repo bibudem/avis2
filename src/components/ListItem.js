@@ -1,60 +1,28 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Card, CardActions, CardContent, Checkbox, Collapse, FormControlLabel, IconButton, ListItem, Switch } from '@mui/material'
+import { Card, CardActions, CardContent, Checkbox, Collapse, FormControlLabel, IconButton, ListItem as MUIListItem, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import DeleteRounded from '@mui/icons-material/Delete'
 import EditAvis from '@/components/EditAvis'
 import { useSnackbar } from '@/components/Snackbar/useSnackbar'
 import { useSmall } from '@/hooks/useSmall'
 import { del, setActive } from '@/actions'
+import Avis from './Avis.js'
 
-export default function AvisListItem({ avis }) {
+export default function ListItem({ avis }) {
   const [checked, setChecked] = useState(avis.active)
   const isSmall = useSmall()
   const [openSnackbar] = useSnackbar()
   const [collapsed, setCollapsed] = useState(false)
 
-  async function onSetActive() {
-    try {
-      setChecked(!checked)
-      const result = await setActive(avis.id)
-
-      if (!result.success) {
-        setChecked(checked)
-        openSnackbar(result.message, { severity: 'error' })
-      }
-    } catch (error) {
-      console.log('catch error: %o', error)
-    }
-  }
-
-  async function onDelete() {
-    try {
-      const result = await del(avis.id)
-      console.log('deleted: %o', result)
-
-      if (result.success) {
-        openSnackbar('Message supprimé')
-      } else {
-        setCollapsed(false)
-        openSnackbar(result.message, { severity: 'error' })
-      }
-    } catch (error) {
-      console.error('Error deleting: %o', error)
-    }
-  }
-
-  useMemo(() => {
-    setChecked(avis.active)
-  }, [avis.active])
-
   return (
-    <Collapse in={!collapsed} onExited={onDelete} appear={true}>
-      <ListItem
+    <Collapse in={!collapsed} appear={true}>
+      <MUIListItem
         sx={{ px: 0 }}
       >
-        <Card
+        <Avis avis={avis} variant='outlined' onDelete={() => setCollapsed(true)} onSetActive={() => setCollapsed(true)} />
+        {/* <Card
           variant='outlined'
           sx={{ width: '100%' }}
         >
@@ -121,8 +89,8 @@ export default function AvisListItem({ avis }) {
             </Grid>
           </Grid>
           <span />
-        </Card>
-      </ListItem>
+        </Card> */}
+      </MUIListItem>
     </Collapse >
   )
 }

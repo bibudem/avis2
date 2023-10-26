@@ -25,19 +25,21 @@ const AvisSchema = new mongoose.Schema({
     toObject: {
       // versionKey: false,
       // flattenObjectIds: true
-      transform(doc, { _id, message, active }) {
-        return {
-          id: _id.toString(),
-          message,
-          active
-        }
-      }
+      transform
+    },
+    toJSON: {
+      // versionKey: false,
+      // flattenObjectIds: true
+      transform
     },
     statics: {
-      getList() {
-        return this.find().sort({ active: -1, updated: -1 }).limit(15)
+      getCurrent() {
+        return this.findOne({ active: true }).exec()
       },
-      async setActive(id) {
+      getList() {
+        return this.find({ active: false }).sort({ created: -1 }).limit(15)
+      },
+      async toggleActive(id, active) {
 
         const doc = await this.findById(id)
 
@@ -50,7 +52,7 @@ const AvisSchema = new mongoose.Schema({
 
         try {
 
-          doc.active = true
+          doc.active = active
 
           await doc.save()
 
@@ -72,5 +74,13 @@ const AvisSchema = new mongoose.Schema({
     }
   }
 )
+
+function transform(doc, { _id, message, active }) {
+  return {
+    id: _id.toString(),
+    message,
+    active
+  }
+}
 
 export default mongoose.models.Avis || mongoose.model('Avis', AvisSchema)

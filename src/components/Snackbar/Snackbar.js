@@ -27,9 +27,9 @@ export default function SnackbarProvider({ children }) {
     setMessage(message)
     setShowCloseButton(showCloseButton)
     setAction(action)
-    setAutoHide(severity ? false : autoHide)
     setOpen(true)
     setSeverity(severity)
+    setAutoHide(severity && severity === 'success' ? autoHide : severity ? false : autoHide)
   }
 
   function closeSnackbar() {
@@ -106,7 +106,7 @@ export default function SnackbarProvider({ children }) {
                 severity={_severity}
                 variant='filled'
                 elevation={6}
-                action={<CloseButton />}
+                action={_severity && _severity !== 'success' && <CloseButton />}
               >
                 {_message}
               </Alert>

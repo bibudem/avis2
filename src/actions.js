@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache'
 
 import dbConnect from '@/lib/dbConnect'
-import Avis from '@/models/Avis.js'
+import Avis from '@/models/Avis'
+import { adminRoute } from '@/config/app'
 
 export async function create(data = { message: 'default message' }) {
   try {
@@ -12,7 +13,7 @@ export async function create(data = { message: 'default message' }) {
     await (new Avis()).save()
     // await Avis.create(avis)
 
-    revalidatePath('/admin')
+    revalidatePath(adminRoute)
 
     return {
       success: true
@@ -23,6 +24,19 @@ export async function create(data = { message: 'default message' }) {
     return {
       success: false,
       message: error.message
+    }
+  }
+}
+
+export async function getCurrent() {
+  try {
+    await dbConnect()
+
+    return await Avis.getCurrent()
+  } catch (error) {
+    return {
+      success: false,
+      error
     }
   }
 }
@@ -46,7 +60,7 @@ export async function save(id, message) {
 
     await Avis.findByIdAndUpdate(id, { message }, { upsert: true })
 
-    revalidatePath('/admin')
+    revalidatePath(adminRoute)
 
     return {
       success: true
@@ -60,14 +74,14 @@ export async function save(id, message) {
   }
 }
 
-export async function setActive(id) {
+export async function toggleActive(id, active) {
 
   try {
     await dbConnect()
 
-    const result = await Avis.setActive(id)
+    const result = await Avis.toggleActive(id, active)
 
-    revalidatePath('/admin')
+    revalidatePath(adminRoute)
 
     return result
 
@@ -94,7 +108,7 @@ export async function del(id) {
       ret.message = 'Cet avis n\'existe pas.'
     }
 
-    revalidatePath('/admin')
+    revalidatePath(adminRoute)
 
     return ret
 

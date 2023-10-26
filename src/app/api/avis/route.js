@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 import dbConnect from '@/lib/dbConnect'
 import Avis from '@/models/Avis'
-import { respond } from '@/lib/respond.js'
-import { respondWithError } from '@/lib/respondWithError.js'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { respond } from '@/lib/respond'
+import { respondWithError } from '@/lib/respondWithError'
+
+const textHtml = 'text/html; charset=utf-8'
 
 const headers = {
-  'Content-Type': 'text/html; charset=utf-8'
+  'Content-Type': textHtml
 }
 
 export async function GET(request) {
@@ -14,30 +18,21 @@ export async function GET(request) {
 
     await dbConnect()
 
-    const params = request.nextUrl.searchParams
+    const avis = await Avis.findOne({ active: true })
 
-    if (params.get('active') === 'true' || request.nextUrl.pathname.endsWith('/site-web/important')) {
-      const avis = await Avis.findOne({ active: true })
+    if (avis) {
+      if (request.nextUrl.pathname.endsWith('/site-web/important')) {
 
-      if (avis) {
-        if (request.nextUrl.pathname.endsWith('/site-web/important')) {
-          // return text/html
-          return new Response(avis.message, {
-            status: 200,
-            headers
-          })
-
-        }
-        return respond(avis.toObject())
+        // return text/html
+        return respond(avis, { accept: textHtml })
 
       }
 
-      return new NextResponse(null, { status: 204, headers })
+      return respond(avis, { accept: request.headers.get('accept') })
+
     }
 
-    const avisList = await Avis.find().sort({ active: -1, updated: -1 }).limit(15)
-
-    return respond(avisList)
+    return new NextResponse(null, { status: 204, headers })
 
 
   } catch (error) {
@@ -53,20 +48,20 @@ export async function GET(request) {
   }
 }
 
-export async function POST(request) {
+// export async function POST(request) {
 
-  try {
+//   try {
 
-    await dbConnect()
+//     await dbConnect()
 
-    const data = await request.json()
+//     const data = await request.json()
 
-    const avis = await Avis.create(data)
+//     const avis = await Avis.create(data)
 
-    return respond(avis, { status: 201, headers: { 'Location': `${request.nextUrl.pathname}/${avis.id}` } })
+//     return respond(avis, { status: 201, headers: { 'Location': `${request.nextUrl.pathname}/${avis.id}` } })
 
-  } catch (error) {
+//   } catch (error) {
 
-    return respondWithError(error)
-  }
-}
+//     return respondWithError(error)
+//   }
+// }

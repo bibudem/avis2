@@ -10,7 +10,7 @@ import { withSnackbar } from '@/hooks/withSnackbar'
 import { useDataLastUpdated } from '@/hooks/useDataLastUpdated'
 import { AvisListItem } from './AvisListItem'
 
-export default withSnackbar(function AvisList({ showSnackbar, children }) {
+export default withSnackbar(function List({ showSnackbar, children }) {
 
   const [dataLastUpdated, updateDataLastUpdated] = useDataLastUpdated()
   const [avisList, setAvisList] = useState([])

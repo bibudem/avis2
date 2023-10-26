@@ -1,4 +1,3 @@
-import { Roboto } from 'next/font/google'
 import Link from 'next/link'
 import { Box, Drawer, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import HomeIcon from '@mui/icons-material/Home'
@@ -27,8 +26,6 @@ const PLACEHOLDER_LINKS = [
   { text: 'Support', icon: SupportIcon },
   { text: 'Logout', icon: LogoutIcon },
 ]
-
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 export const metadata = {
   title: 'Avis - Les Bibliothèques/UdeM',
@@ -93,17 +90,19 @@ export default function RootLayout({ children }) {
               ))}
             </List>
           </Drawer>
+
           <Box
             component="main"
             sx={{
               flexGrow: 1,
               // mt: ['48px', '56px', '64px'],
-              pt: [0, 0, 'calc(40px - 1rem)'],
+              pt: 'calc(40px - 1rem)',
               px: [1.5, 2, 3],
               pb: [1.5, 2, 3],
               maxWidth: 1415,
               ml: 'auto',
-              mr: 'auto'
+              mr: 'auto',
+              height: '100%'
             }}
           >
             {children}

@@ -25,7 +25,7 @@ const theme = extendTheme({
         background: {
           default: 'rgb(246, 245, 244)'
         }
-      },
+      }
       // typography: {
       //   fontFamily: roboto.style.fontFamily,
       // },
