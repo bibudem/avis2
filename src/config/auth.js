@@ -6,8 +6,8 @@ if (process.env.NODE_ENV === 'production') {
 
   const { default: GithubProvider } = await import('next-auth/providers/github')
   const github = GithubProvider({
-    clientId: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET
+    clientId: process.env.OAUTH2_CLIENT_ID,
+    clientSecret: process.env.OAUTH2_CLIENT_SECRET
   })
 
   providers.push(github)
