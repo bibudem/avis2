@@ -106,6 +106,7 @@ export default function Avis({ avis, variant, onDelete = noop, onSetActive = noo
 
   useEffect(() => {
     setStyles(changed && out ? changedStylesOff : changedStylesOn)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changed, out])
 
   return (

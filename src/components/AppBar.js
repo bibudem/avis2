@@ -31,7 +31,7 @@ export default function AppBar({ children }) {
   useEffect(() => {
     if (status === 'authenticated') {
       setNameFirstLetter(session.user.name[0])
-      console.log(session)
+      console.log('session: %o', session)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])

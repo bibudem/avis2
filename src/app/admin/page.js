@@ -3,7 +3,7 @@ import { getCurrent, getList } from '@/actions'
 import ListItem from '@/components/ListItem'
 import AddAvisButton from '@/components/AddAvisButton'
 import Avis from '@/components/Avis'
-import AvisEmpty from '@/components/AvisEmpty.js'
+import AvisEmpty from '@/components/AvisEmpty'
 // import { TransitionGroup } from 'react-transition-group'
 
 function Heading({ children, ...props }) {

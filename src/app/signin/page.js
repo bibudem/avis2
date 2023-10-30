@@ -1,13 +1,12 @@
+import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { Card, CardContent } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import Grid from '@mui/material/Unstable_Grid2'
 import SigninWithGitHub from '@/components/auth/SignInWithGitHub'
-import { authOptions } from '../api/auth/[...nextauth]/route'
-import { redirect } from 'next/navigation'
+import { authOptions } from '@/config/auth'
 
 export default async function SigninPage() {
   const session = await getServerSession(authOptions)
-  console.log('session: %o', session)
 
   if (session) {
     redirect('/')

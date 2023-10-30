@@ -1,16 +1,16 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import Editor from '@/lib/Editor/ckeditor'
-import { useEffect, useState } from 'react'
-
-function noop() { }
+import noop from '@/utils/noop'
 
 export default function CustomCKEditor({ data, onSave = noop, onStateChange = noop, onFocus = noop, onBlur = noop }) {
   const [state, setState] = useState('initial')
 
   useEffect(() => {
     onStateChange(state)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
 
   return (
