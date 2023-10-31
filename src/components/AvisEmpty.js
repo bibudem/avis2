@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSmall } from '@/hooks/useSmall'
 
@@ -20,7 +20,16 @@ export default function AvisEmpty({ children }) {
       >
         <Grid xs
         >
-          {children}
+          <Typography
+            fontStyle='italic'
+            component='p'
+            sx={{
+              marginTop: 'var(--ck-spacing-large)',
+              marginBottom: 'var(--ck-spacing-large)'
+            }}
+          >
+            {children}
+          </Typography>
         </Grid>
       </Grid>
       <span />

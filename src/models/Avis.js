@@ -23,13 +23,9 @@ const AvisSchema = new mongoose.Schema({
       updatedAt: 'updated'
     },
     toObject: {
-      // versionKey: false,
-      // flattenObjectIds: true
       transform
     },
     toJSON: {
-      // versionKey: false,
-      // flattenObjectIds: true
       transform
     },
     statics: {

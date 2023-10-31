@@ -4,7 +4,6 @@ import ListItem from '@/components/ListItem'
 import AddAvisButton from '@/components/AddAvisButton'
 import Avis from '@/components/Avis'
 import AvisEmpty from '@/components/AvisEmpty'
-// import { TransitionGroup } from 'react-transition-group'
 
 function Heading({ children, ...props }) {
   return (
@@ -24,13 +23,18 @@ export default async function DashboardPage() {
         Message actif
       </Heading>
       {
-        current ? (
-          <Avis key={current.id} avis={current.toObject()} />
-        ) : (
-          <AvisEmpty>
-            <Typography fontStyle='italic'>Aucun avis actif en ce moment.</Typography>
-          </AvisEmpty>
-        )
+        current.success ?
+          current.data ? (
+            <Avis key={current.data.id} avis={current.data} />
+          ) : (
+            <AvisEmpty>
+              Aucun avis actif en ce moment.
+            </AvisEmpty>
+          ) : (
+            <AvisEmpty>
+              Erreur de chargement de l'avis.
+            </AvisEmpty>
+          )
       }
       <Heading mt={4}>
         Banque de messages
@@ -38,7 +42,7 @@ export default async function DashboardPage() {
       <List sx={{ p: 0, '& > *:first-child .MuiListItem-root': { pt: 0 } }}>
         {
           data.map(avis => (
-            <ListItem key={avis.id} avis={avis.toObject()} />
+            <ListItem key={avis.id} avis={avis} />
           )
           )
         }

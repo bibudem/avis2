@@ -33,7 +33,19 @@ export async function getCurrent() {
   try {
     await dbConnect()
 
-    return await Avis.getCurrent()
+    const result = await Avis.getCurrent()
+
+    if (result) {
+      return {
+        success: true,
+        data: result.toObject()
+      }
+    }
+
+    return {
+      success: true,
+      data: null
+    }
   } catch (error) {
     return {
       success: false,
@@ -46,7 +58,9 @@ export async function getList() {
   try {
     await dbConnect()
 
-    return await Avis.getList()
+    const result = await Avis.getList()
+
+    return result.map(avis => avis.toObject())
   } catch (error) {
     return {
       success: false,
