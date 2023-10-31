@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
       <body>
         <Providers>
           <AppBar />
-          <Drawer
+          {/* <Drawer
             sx={{
               width: DRAWER_WIDTH,
               flexShrink: 0,
@@ -89,7 +89,7 @@ export default function RootLayout({ children }) {
                 </ListItem>
               ))}
             </List>
-          </Drawer>
+          </Drawer> */}
 
           <Box
             component="main"

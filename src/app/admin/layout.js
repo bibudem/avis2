@@ -14,7 +14,7 @@ export default function DashboardLayout({ Component, pageProps, children, modal 
       >
       </Box>
       {children}
-      {modal}
+      {/* {modal} */}
     </>
   )
 }
