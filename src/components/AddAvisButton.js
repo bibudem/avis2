@@ -1,25 +1,25 @@
 'use client'
 
-import { useTransition } from 'react'
 import { Fab } from '@mui/material'
 import Add from '@mui/icons-material/Add'
 import { create } from '@/actions'
 import { useSmall } from '@/hooks/useSmall'
+import noop from '@/utils/noop'
 
-export default function AddAvisButton() {
-  const [isPending, startTransition] = useTransition()
+export default function AddAvisButton({ onSuccess = noop }) {
   const isSmall = useSmall()
 
   function onClick() {
-    startTransition(() => {
-      create()
-        .then(result => {
-          console.log('result: %o', result)
-        })
-        .catch(error => {
-          console.error('error: %o', error)
-        })
-    })
+    create()
+      .then(result => {
+        console.log('result: %o', result)
+        if (result.success) {
+        }
+        onSuccess.apply(null, result.data)
+      })
+      .catch(error => {
+        console.error('error: %o', error)
+      })
   }
 
   return (

@@ -10,13 +10,14 @@ export async function create(data = { message: 'default message' }) {
   try {
     await dbConnect()
 
-    await (new Avis()).save()
-    // await Avis.create(avis)
+    const avis = new Avis()
+    await avis.save()
 
     revalidatePath(adminRoute)
 
     return {
-      success: true
+      success: true,
+      data: avis
     }
 
   } catch (error) {

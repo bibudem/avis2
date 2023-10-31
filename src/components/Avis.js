@@ -22,7 +22,7 @@ export default function Avis({ avis, variant, onDelete = noop, onSetActive = noo
   const baseChangedStyles = {
     borderRadius: 1,
     outlineStyle: 'dashed',
-    outlineWidth: '2px',
+    outlineWidth: '1px',
     outlineColor: 'transparent',
     '& > .ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable)': {
       transition: `all ${theme.transitions.duration.shortest}ms cubic-bezier(0.3, 0, 1, 1)`
@@ -34,7 +34,7 @@ export default function Avis({ avis, variant, onDelete = noop, onSetActive = noo
     outlineColor: 'var(--md-palette-warning-light)',
     // outline: '2px dashed var(--md-palette-warning-light)',
     borderColor: 'transparent',
-    backgroundColor: '#ed6c020e',
+    backgroundColor: 'rgb(237 108 2 / 3%)',
     transition: `all ${theme.transitions.duration.short}ms $cubic-bezier(0, 0, 0, 1)`,
     ':hover': {
       outlineColor: 'var(--md-palette-warning-dark)'
@@ -89,6 +89,7 @@ export default function Avis({ avis, variant, onDelete = noop, onSetActive = noo
   }
 
   function onStateChange(state) {
+    // console.log('[onStateChange] %s', state)
     setChanged(state === 'changed')
   }
 
@@ -128,7 +129,12 @@ export default function Avis({ avis, variant, onDelete = noop, onSetActive = noo
           borderColor='divider'
           sx={styles}
         >
-          <EditAvis avis={avis} onStateChange={onStateChange} onBlur={onEditAvisBlur} onFocus={onEditAvisFocus} />
+          <EditAvis
+            avis={avis}
+            onStateChange={onStateChange}
+            onBlur={onEditAvisBlur}
+            onFocus={onEditAvisFocus}
+          />
         </Grid>
         <Grid
           alignSelf={isSmall && 'flex-end'}

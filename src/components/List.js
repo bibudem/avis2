@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { TransitionGroup } from 'react-transition-group'
-import { Alert, AlertTitle, Collapse, Fade, IconButton, List, Skeleton, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Fade, IconButton, Skeleton, useTheme } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import Close from '@mui/icons-material/Close'
 import { withSnackbar } from '@/hooks/withSnackbar'
@@ -66,6 +65,10 @@ export default withSnackbar(function List({ showSnackbar, children }) {
     fetchAvisList()
   }, [dataLastUpdated])
 
+  useEffect(() => {
+    console.log('dataLastUpdated: %o', dataLastUpdated)
+  }, [dataLastUpdated])
+
   if (avisListLoading) {
     return (
 
@@ -114,15 +117,11 @@ export default withSnackbar(function List({ showSnackbar, children }) {
 
   return (
     <List>
-      <TransitionGroup>
-        {
-          avisList.map(avis => (
-            <Collapse key={avis.id}>
-              <AvisListItem avis={avis} onDelete={() => onDeleteBtnClick(avis.id)} />
-            </Collapse>
-          ))
-        }
-      </TransitionGroup>
+      {
+        avisList.map(avis => (
+          <AvisListItem key={avis.id} avis={avis} onDelete={() => onDeleteBtnClick(avis.id)} />
+        ))
+      }
     </List>
   )
 })

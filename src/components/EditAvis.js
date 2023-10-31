@@ -1,23 +1,19 @@
 'use client'
 
-import { useTransition } from 'react'
 import dynamic from 'next/dynamic'
-import CKEditor from '@/components/CustomCKEditor'
+// import CKEditor from '@/components/CustomCKEditor'
 import { useSnackbar } from '@/components/Snackbar/useSnackbar'
 import { save } from '@/actions'
 import noop from '@/utils/noop'
 import './EditAvis.scss'
 
-// const CKEditor = dynamic(() => import('@/components/CustomCKEditor'), { ssr: false })
+const CKEditor = dynamic(() => import('@/components/CustomCKEditor').then((e) => e.default), { ssr: false })
 
 export default function EditAvis({ avis, onStateChange = noop, onFocus = noop, onBlur = noop, ...props }) {
-  const [isPending, startTransition] = useTransition()
   const [openSnackbar, closeSnackbar] = useSnackbar()
 
   async function onSave(message) {
-    console.log('I AM SAVE!!! %o', message)
     const result = await save(avis.id, message)
-    console.log('result: %o', result)
 
     if (result.success) {
       openSnackbar('Message sauvegardé.')

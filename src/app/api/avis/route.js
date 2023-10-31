@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import dbConnect from '@/lib/dbConnect'
 import Avis from '@/models/Avis'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import dbConnect from '@/lib/dbConnect'
 import { respond } from '@/lib/respond'
 import { respondWithError } from '@/lib/respondWithError'
+import { authOptions } from '@/config/auth'
 
 const textHtml = 'text/html; charset=utf-8'
 

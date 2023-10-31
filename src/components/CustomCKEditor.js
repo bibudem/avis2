@@ -14,7 +14,6 @@ export default function CustomCKEditor({ data, onSave = noop, onStateChange = no
   }, [state])
 
   return (
-
     <CKEditor
       editor={Editor}
       data={data}
@@ -23,7 +22,7 @@ export default function CustomCKEditor({ data, onSave = noop, onStateChange = no
         toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', '|', 'save']
       }}
       onReady={editor => {
-        const initialData = editor.getData()
+        let initialData = editor.getData()
 
         // Prevent paragraph breaking into two
         editor.editing.view.document.on(
@@ -35,6 +34,7 @@ export default function CustomCKEditor({ data, onSave = noop, onStateChange = no
             evt.stop()
           }, { priority: 'high' })
 
+        // Add keyboard shortcut for non break space
         editor.keystrokes.set('Ctrl+Shift+space', (key, stop) => {
           editor.execute('input', { text: '\u00a0' })
           stop()
@@ -52,14 +52,22 @@ export default function CustomCKEditor({ data, onSave = noop, onStateChange = no
           }
         )
 
-        editor.editing.view.document.on('blur', onBlur)
-        editor.editing.view.document.on('focus', onFocus)
+        editor.ui.focusTracker.on('change:isFocused', (event, propName, isFocused) => {
+          // console.log(`${propName} has changed from ${oldValue} to ${newValue}`)
+          if (isFocused) {
+            onFocus()
+          } else {
+            onBlur()
+          }
+        })
 
         // CKEditorInspector.attach(editor)
 
         editor.on('save', event => {
-          const data = /^<p>(.+)<\/p>$/.exec(editor.getData())[1]
-          onSave(data)
+          const data = editor.getData()
+          const html = /^<p>(.+)<\/p>$/.exec(data)[1]
+          onSave(html)
+          initialData = data
           setState('initial')
         })
       }}
