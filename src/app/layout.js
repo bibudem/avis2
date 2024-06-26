@@ -99,7 +99,7 @@ export default function RootLayout({ children }) {
               pt: 'calc(40px - 1rem)',
               px: [1.5, 2, 3],
               pb: [1.5, 2, 3],
-              maxWidth: 1340,
+              maxWidth: 1415,
               ml: 'auto',
               mr: 'auto',
               height: '100%'
