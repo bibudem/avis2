@@ -1,26 +1,34 @@
-'use client'
+// ListItem.js
+'use client';
 
-import { useEffect, useState } from 'react'
-import { Collapse, ListItem as MUIListItem } from '@mui/material'
-import Avis from './Avis'
+import { useState } from 'react';
+import { Collapse, ListItem as MUIListItem } from '@mui/material';
+import Avis from './Avis';
 
-export default function ListItem({ avis }) {
-  const [collapsed, setCollapsed] = useState(false)
+export default function ListItem({ avis, onDelete, onStateChange }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const handleDelete = async () => {
+    await onDelete();
+    setCollapsed(true);
+  };
+
+  const handleStateChange = async () => {
+    await onStateChange();
+    setCollapsed(true);
+  };
 
   return (
-    <Collapse
-      in={!collapsed}
-      appear={true}
-      addEndListener={(node, done) => {
-        // console.log('node: %o', node)
-        done()
-      }}
-    >
-      <MUIListItem
-        sx={{ px: 0 }}
+      <Collapse
+          in={!collapsed}
+          appear={true}
+          addEndListener={(node, done) => {
+            done();
+          }}
       >
-        <Avis avis={avis} variant='outlined' onDelete={() => setCollapsed(true)} onSetActive={() => setCollapsed(true)} />
-      </MUIListItem>
-    </Collapse >
-  )
+        <MUIListItem sx={{ px: 0 }}>
+          <Avis avis={avis} variant='outlined' onDelete={handleDelete} onSetActive={handleStateChange} />
+        </MUIListItem>
+      </Collapse>
+  );
 }

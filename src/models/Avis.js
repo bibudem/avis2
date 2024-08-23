@@ -33,7 +33,7 @@ const AvisSchema = new mongoose.Schema({
         return this.findOne({ active: true }).exec()
       },
       getList() {
-        return this.find({ active: false }).sort({ created: -1 }).limit(15)
+        return this.find({ active: false }).sort({ created: -1 }).limit(25)
       },
       async toggleActive(id, active) {
 

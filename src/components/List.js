@@ -1,3 +1,4 @@
+//list.js
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -54,7 +55,7 @@ export default withSnackbar(function List({ showSnackbar, children }) {
           throw result.data
         }
       } catch (error) {
-        console.error('An error occured while fetching `/api/avis`: %o', error)
+        //console.error('An error occured while fetching `/api/avis`: %o', error)
         setError(error)
         setAlertOpen(true)
       } finally {
@@ -66,62 +67,62 @@ export default withSnackbar(function List({ showSnackbar, children }) {
   }, [dataLastUpdated])
 
   useEffect(() => {
-    console.log('dataLastUpdated: %o', dataLastUpdated)
+    //console.log('dataLastUpdated: %o', dataLastUpdated)
   }, [dataLastUpdated])
 
   if (avisListLoading) {
     return (
 
-      <Grid
-        container
-        direction='column'
-        flexWrap='nowrap'
-        gap={2}
-      >
-        {
-          (new Array(13)).fill(0).map((_, i) =>
-            <Skeleton
-              key={i}
-              variant='rectangular'
-              component='div'
-              height={91.25}
-            />
-          )
-        }
-      </Grid>
+        <Grid
+            container
+            direction='column'
+            flexWrap='nowrap'
+            gap={2}
+        >
+          {
+            (new Array(13)).fill(0).map((_, i) =>
+                <Skeleton
+                    key={i}
+                    variant='rectangular'
+                    component='div'
+                    height={91.25}
+                />
+            )
+          }
+        </Grid>
     )
   }
 
   if (error) {
     return (
-      <Fade in={alertOpen}>
-        <Alert
-          severity='error'
-          action={
-            <IconButton
-              aria-label='fermer'
-              color='inherit'
-              size='small'
-              onClick={() => setAlertOpen(false)}
-            >
-              <Close fontSize='inherit' />
-            </IconButton>
-          }
-        >
-          <AlertTitle>Erreur</AlertTitle>
-          {error.message}
-        </Alert>
-      </Fade>
+        <Fade in={alertOpen}>
+          <Alert
+              severity='error'
+              action={
+                <IconButton
+                    aria-label='fermer'
+                    color='inherit'
+                    size='small'
+                    onClick={() => setAlertOpen(false)}
+                >
+                  <Close fontSize='inherit' />
+                </IconButton>
+              }
+          >
+            <AlertTitle>Erreur</AlertTitle>
+            {error.message}
+          </Alert>
+        </Fade>
     )
   }
 
   return (
-    <List>
-      {
-        avisList.map(avis => (
-          <AvisListItem key={avis.id} avis={avis} onDelete={() => onDeleteBtnClick(avis.id)} />
-        ))
-      }
-    </List>
+      <List>
+        {
+          avisList.map(avis => (
+              <AvisListItem key={avis.id} avis={avis} onDelete={() => onDeleteBtnClick(avis.id)} />
+          ))
+        }
+      </List>
   )
 })

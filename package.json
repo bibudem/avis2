@@ -5,17 +5,20 @@
   "scripts": {
     "dev": "next dev",
     "build": "cross-env NODE_ENV=production next build",
-    "start": "next start",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "engines": {
     "node": "18.18.0"
   },
   "dependencies": {
+    "@azure/msal-node": "^2.13.0",
     "@ckeditor/ckeditor5-inspector": "^4.1.0",
     "@ckeditor/ckeditor5-react": "^6.1.0",
-    "@emotion/react": "^11.11.1",
+    "@ckeditor/ckeditor5-watchdog": "^43.0.0",
+    "@emotion/react": "^11.13.0",
     "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.14.0",
     "@mui/lab": "^5.0.0-alpha.136",
     "@mui/material": "^5.14.0",
@@ -24,13 +27,22 @@
     "ckeditor5": "^39.0.1",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "http-proxy-middleware": "^3.0.0",
+    "https-proxy-agent": "^7.0.5",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^7.3.2",
     "next": "^14.0.0",
-    "next-auth": "^4.24.4",
+    "next-auth": "^4.24.7",
+    "passport": "^0.7.0",
+    "passport-azure-ad": "^4.3.5",
+    "passport-azure-oauth2": "^0.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.1.1"
+    "react-redux": "^8.1.1",
+    "sass": "^1.77.8"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"

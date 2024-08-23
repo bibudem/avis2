@@ -1,19 +1,26 @@
 export const withCors = (next) => {
   return async (request, _next) => {
-    const res = await next(request, _next)
-    const pathname = request.nextUrl.pathname
-    if (pathname.startsWith('/api') || pathname.startsWith('/site-web')) {
-      if (res) {
-        // add the CORS headers to the response
-        res.headers.append('Access-Control-Allow-Credentials', "true")
-        res.headers.append('Access-Control-Allow-Origin', '*') // replace this your actual origin
-        res.headers.append('Access-Control-Allow-Methods', 'GET,PATCH,POST,PUT')
-        res.headers.append(
+    // Ajout des en-têtes x-forwarded
+    request.headers.set('x-forwarded-host', request.headers.get('host'));
+    request.headers.set('x-forwarded-proto', request.protocol);
+    request.headers.set('x-forwarded-for', request.ip);
+
+    // Traitement de la requête
+    const res = await next(request, _next);
+
+    if (res) {
+      // Ajout des en-têtes CORS à la réponse
+      res.headers.set('Access-Control-Allow-Credentials', "true");
+      res.headers.set('Access-Control-Allow-Origin', '*');
+      res.headers.set('Access-Control-Allow-Methods', 'GET,PATCH,POST,PUT');
+      res.headers.set(
           'Access-Control-Allow-Headers',
           'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-        )
-      }
+      );
+      res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.headers.set('Access-Control-Allow-Credentials', 'true');
     }
-    return res
-  }
-}
+
+    return res;
+  };
+};

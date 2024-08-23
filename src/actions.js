@@ -59,7 +59,7 @@ export async function getList() {
     await dbConnect()
 
     const result = await Avis.getList()
-
+    //console.log('result: %o', result)
     return result.map(avis => avis.toObject())
   } catch (error) {
     return {

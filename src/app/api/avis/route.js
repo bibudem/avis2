@@ -4,7 +4,7 @@ import Avis from '@/models/Avis'
 import dbConnect from '@/lib/dbConnect'
 import { respond } from '@/lib/respond'
 import { respondWithError } from '@/lib/respondWithError'
-import { authOptions } from '@/config/auth'
+//import { authOptions } from '@/config/auth'
 
 const textHtml = 'text/html; charset=utf-8'
 
