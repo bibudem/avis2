@@ -41,12 +41,11 @@ nextApp.prepare().then(() => {
     // Register routes and middleware in appropriate order
     server.use('/api/auth', authRoutes);
 
-    // Middleware de proxy pour les API
-
-    server.use('/api', createProxyMiddleware({
+    // Middleware de proxy pour les API externes
+    server.use('/api/external', createProxyMiddleware({
         target: 'https://avis-pp.bib.umontreal.ca',
         changeOrigin: true,
-        pathRewrite: { '^/api': '/' },
+        pathRewrite: { '^/api/external': '/' },
         secure: false,
         agent: new HttpsProxyAgent(proxyUrl),
         timeout: 30000

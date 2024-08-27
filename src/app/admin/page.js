@@ -88,7 +88,7 @@ export default function DashboardPage() {
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <SearchIcon color={searchKeyword ? 'primary' : 'disabled'} />
+                            <SearchIcon color={searchKeyword ? 'orange' : 'disabled'} />
                         </InputAdornment>
                     ),
                     placeholder: 'Recherche par mot-clé',

@@ -13,14 +13,23 @@ const theme = extendTheme({
   colorSchemes: {
     light: {
       palette: {
+        headerColor: {
+          main: '#0b113a',
+        },
+        darkBlue: {
+          main: '#0b113a',
+        },
         primary: {
-          main: '#ee6102',
+          main: '#f04e24',
         },
         secondary: {
-          main: '#27408d',
+          main: '#0057ac',
+        },
+        orange: {
+          main: '#f04e24',
         },
         error: {
-          main: '#a82424',
+          main: '#ac0e00',
         },
         background: {
           default: 'rgb(246, 245, 244)'

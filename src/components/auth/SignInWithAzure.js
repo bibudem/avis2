@@ -13,8 +13,8 @@ export default function SigninWithAzure() {
     };
 
     return (
-        <Button variant='contained' color='primary' onClick={handleSignIn}>
-            Continuer avec votre compte
+        <Button variant='contained' color='primary' sx={{ marginBottom: '20px' }} onClick={handleSignIn}>
+            Connectez-vous
         </Button>
     );
 }

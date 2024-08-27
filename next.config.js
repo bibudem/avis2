@@ -12,8 +12,8 @@ const nextConfig = {
                 destination: '/signin',
             },
             {
-                source: '/api/:path*',
-                destination: 'https://avis-pp.bib.umontreal.ca/api/:path*',
+                source: '/site-web/important',
+                destination: '/api/avis'
             },
             {
                 source: '/:path*',

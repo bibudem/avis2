@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { AppBar as MuiAppBar, Avatar, Toolbar, Box, IconButton, Menu, MenuItem, Typography, ListItemIcon } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import { AppBar as MuiAppBar,  Toolbar, Box, IconButton, Menu, MenuItem, Typography, ListItemIcon } from '@mui/material';
+import Link from "next/link";
+import Image from 'next/image';
+import logoImage from '@/images/biblio-logo-sans.png';
 import Logout from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 
 export default function AppBar() {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [nameUser, setNameUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   const handleOpenUserMenu = useCallback((event) => {
     setAnchorElUser(event.currentTarget);
@@ -28,22 +29,25 @@ export default function AppBar() {
   useEffect(() => {
     const storedSession = localStorage.getItem('session');
     if (storedSession) {
-      const data = JSON.parse(storedSession);
-      setNameUser(`${data.givenName} ${data.familyName}`);
+      const { givenName, familyName } = JSON.parse(storedSession);
+      setNameUser(`${givenName} ${familyName}`);
     } else {
-      // Si aucune session n'est trouvée, rediriger vers la page de connexion
+      // Rediriger vers la page de connexion si aucune session n'est trouvée
       window.location.href = '/api/auth/login';
     }
-    setIsLoading(false);
   }, []);
 
-  if (isLoading) return <div>...</div>;
-
   return (
-      <MuiAppBar position="static">
+      <MuiAppBar position="static" style={{ background: '#0b113a'}}>
         <Toolbar>
-          <DashboardIcon sx={{ mr: 1, transform: 'translateY(-2px)' }} />
-          <Typography variant="h6" noWrap component="div">
+          <Link href="/admin" passHref>
+            <Image
+                src={logoImage}
+                alt="Logo"
+                style={{ cursor: 'pointer', width: '100%', height:'45px' }}
+            />
+          </Link>
+          <Typography variant="h6" noWrap component="div" style={{ marginLeft:'10px' }}>
             Avis
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
@@ -51,7 +55,7 @@ export default function AppBar() {
             {nameUser ? (
                 <>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <PersonIcon sx={{ bgcolor: 'white', color: 'black' }} />
+                    <PersonIcon sx={{ bgcolor: 'white', color: 'secondary' }} />
                     <Typography variant="body1" sx={{ ml: 1, color: 'white' }}>
                       {nameUser}
                     </Typography>

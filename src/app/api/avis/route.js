@@ -1,3 +1,4 @@
+//app/api/avis/route.js
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import Avis from '@/models/Avis'

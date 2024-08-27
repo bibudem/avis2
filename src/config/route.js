@@ -1,7 +1,5 @@
 const express = require('express');
-const { passport, validateAuth } = require('./passport');
-const fs = require('fs');
-const path = require('path');
+const { passport } = require('./passport');
 
 const router = express.Router();
 
@@ -57,51 +55,6 @@ router.get('/logout', (req, res, next) => {
             res.clearCookie('connect.sid');
             sendRedirect(res, '/signin', null);
         });
-    });
-});
-
-router.get('/api/auth/session', (req, res) => {
-    const session = req.session;
-
-    if (session && session.user) {
-        res.json({
-            user: {
-                id: session.user.id,
-                name: session.user.name,
-                email: session.user.email,
-                givenName: session.user.givenName,
-                familyName: session.user.familyName
-            },
-            expires: session.expires,
-            accessToken: session.accessToken,
-            refreshToken: session.refreshToken
-        });
-    } else {
-        res.status(401).json({ error: "Unauthorized" });
-    }
-});
-
-router.post('/_log ', (req, res) => {
-    const logDir = path.join(__dirname, '/logs');
-    const date = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
-    const logFile = path.join(logDir, `logs_${date}.txt`);
-
-    // Assurez-vous que le répertoire /logs existe
-    if (!fs.existsSync(logDir)) {
-        fs.mkdirSync(logDir, { recursive: true });
-    }
-
-    const errorMessage = req.body.error || 'Erreur inconnue';
-    const logMessage = `[${new Date().toISOString()}] ERROR: ${errorMessage}\n`;
-
-    // Écrire l'erreur dans le fichier de logs
-    fs.appendFile(logFile, logMessage, (err) => {
-        if (err) {
-            console.error('Erreur lors de l\'écriture du fichier de logs:', err);
-            return res.status(500).send('Impossible de créer le fichier de logs.');
-        }
-
-        res.status(200).send('Erreur enregistrée avec succès.');
     });
 });
 

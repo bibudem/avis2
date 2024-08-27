@@ -39,3 +39,8 @@ next-env.d.ts
 /src/lib/Editor/translations
 
 /src/config/oauthConfig.js
+
+.idea
+.next
+logs
+package-lock.json

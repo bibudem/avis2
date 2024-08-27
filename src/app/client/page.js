@@ -7,18 +7,20 @@ const ClientPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const storedSession = localStorage.getItem('session');
-        if (storedSession) {
-            const data = JSON.parse(storedSession);
-            setNameUser(`${data.givenName} ${data.familyName}`);
-        } else {
-            // Si aucune session n'est trouvée, rediriger vers la page de connexion
-            window.location.href = '/api/auth/login';
+        try {
+            const storedSession = localStorage.getItem('session');
+            if (storedSession) {
+                const data = JSON.parse(storedSession);
+                setSession(data);
+            } else {
+                // Si aucune session n'est trouvée, rediriger vers la page de connexion
+                window.location.href = '/api/auth/login';
+            }
+        } catch (err) {
+            console.log(err); // Log the error to the console
+            setError(err); // Set the error to handle it if needed later
         }
-        setIsLoading(false);
     }, []);
-
-    if (error) return <p>{error}</p>;
 
     return (
         <div>

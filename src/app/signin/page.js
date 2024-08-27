@@ -1,36 +1,48 @@
-import { Card, CardContent,Typography } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2'
-import SigninWithAzure from '@/components/auth/SignInWithAzure'
+import { Card, CardContent, Typography, Box } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import SigninWithAzure from '@/components/auth/SignInWithAzure';
+import LoginIcon from '@mui/icons-material/Login';
+import Image from 'next/image';
+import logoImage from '@/images/biblio-logo.png'; // Import image
 
-export default async function SigninPage() {
-
+export default function SigninPage() {
     return (
         <Grid
             container
-            direction='column'
+            direction='row'
             alignItems='center'
-            justifyContent='center'
-            height='50vh'
-            sx={{ textAlign: 'center', padding: '20px' }}
+            height='100vh'
+            sx={{ padding: 0, margin: 0 }}
         >
-            <Grid item>
-                <Card sx={{ padding: '30px' }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    marginTop: '-300px',
+                    padding: '25px 0 0',
+                }}
+            >
+                <Card sx={{ padding: '20px', maxWidth: 500, textAlign: 'center' }}>
                     <CardContent>
-                        <Typography variant="h4" sx={{ marginBottom: '20px' }}>
-                            Bienvenue!
+                        <Image
+                            src={logoImage}
+                            alt="Biblio Logo"
+                            width={270}
+                            style={{ marginBottom: '70px', height:'auto' }}
+                        />
+                        <Typography variant="h3" component="h3" color="secondary" sx={{ marginBottom: '20px',textShadow: '1px 1px 2px #000' }}>
+                            PLATEFORME AVIS
                         </Typography>
-                        <Grid container direction="column" spacing={5}>
-                            <Grid item>
-                                <Card>
-                                    <CardContent sx={{ margin: '20px' }}>
-                                        <SigninWithAzure />
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        </Grid>
+                        <Typography variant="h4" component="h4" color="primary" sx={{ marginBottom: '50px' }}>
+                            Accès réservé
+                        </Typography>
+                        <SigninWithAzure />
                     </CardContent>
                 </Card>
-            </Grid>
+            </Box>
         </Grid>
-    )
+    );
 }
