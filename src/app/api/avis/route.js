@@ -1,11 +1,9 @@
 //app/api/avis/route.js
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import Avis from '@/models/Avis'
 import dbConnect from '@/lib/dbConnect'
 import { respond } from '@/lib/respond'
 import { respondWithError } from '@/lib/respondWithError'
-//import { authOptions } from '@/config/auth'
 
 const textHtml = 'text/html; charset=utf-8'
 

@@ -28,12 +28,13 @@ export default function AppBar() {
 
   useEffect(() => {
     const storedSession = localStorage.getItem('session');
+
+    const currentUrl = window.location.pathname;
     if (storedSession) {
       const { givenName, familyName } = JSON.parse(storedSession);
       setNameUser(`${givenName} ${familyName}`);
-    } else {
-      // Rediriger vers la page de connexion si aucune session n'est trouvée
-      window.location.href = '/api/auth/login';
+    } else if (currentUrl !== '/signin') {
+      window.location.href = '/signin';
     }
   }, []);
 

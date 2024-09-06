@@ -1,17 +1,16 @@
 const express = require('express');
 const session = require('express-session');
 const passport = require('./src/config/passport').passport;
+const proxyAgent = require('./src/config/passport').proxyAgent;
 const authRoutes = require('./src/config/route');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const { HttpsProxyAgent } = require('https-proxy-agent');
 const next = require('next');
+const MemoryStore = require('memorystore')(session);
 
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 
-// Importer la variable proxyUrl depuis votre fichier de configuration
-const { proxyUrl } = require('./src/config/oauthConfig');
 
 nextApp.prepare().then(() => {
     const server = express();
@@ -26,13 +25,25 @@ nextApp.prepare().then(() => {
 
     server.set('trust proxy', true);
 
-    // Middleware de session
+    // Configurez le store en mémoire
+    const memoryStore = new MemoryStore();
+
     server.use(session({
-        secret: process.env.SESSION_SECRET || 'Avis2024!!+*',
+        store: memoryStore,
+        secret: process.env.SESSION_SECRET || 'Avis4@b7!Kp$9mZ2^vLx&1Wq*R',
         resave: false,
         saveUninitialized: true,
-        cookie: { secure: !dev, maxAge: 10 * 60 * 3000 } // Durée d'expiration de 30 minutes
+        cookie: { secure: true, maxAge: 10 * 60 * 6000 } // Durée d'expiration de 60 minutes
     }));
+
+    // Ajouter les données essentielles dans le cookie
+    server.use((req, res, next) => {
+        if (req.session.userData) {
+            res.cookie('userData', JSON.stringify(req.session.userData), { httpOnly: true, secure: true });
+        }
+        next();
+    });
+
 
     // Initialisation de Passport
     server.use(passport.initialize());
@@ -47,7 +58,7 @@ nextApp.prepare().then(() => {
         changeOrigin: true,
         pathRewrite: { '^/api/external': '/' },
         secure: false,
-        agent: new HttpsProxyAgent(proxyUrl),
+        agent: proxyAgent,
         timeout: 30000
     }));
 
@@ -58,8 +69,8 @@ nextApp.prepare().then(() => {
     const port = process.env.PORT || 8186;
     server.listen(port, (err) => {
         if (err) throw err;
-        console.log(`[${new Date().toISOString()}] > Ready on http://localhost:${port}`);
+        console.log(`Server running on port ${port}`);
     });
 }).catch(err => {
-    console.error(`[${new Date().toISOString()}] Error preparing Next.js app:`, err);
+    console.error(`[${new Date().toISOString()}] Error preparing Next.js app: ${err.message}`);
 });

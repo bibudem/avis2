@@ -11,6 +11,7 @@ const {
     proxyUrl
 } = require('./oauthConfig');
 
+// Créez l'agent proxy une seule fois pour éviter des créations inutiles
 const proxyAgent = new HttpsProxyAgent(proxyUrl);
 
 passport.use(new AzureOAuth2Strategy({
@@ -19,46 +20,50 @@ passport.use(new AzureOAuth2Strategy({
     callbackURL: Azure_callbackURL,
     tenant: AZURE_AD_TENANT_ID,
     resource: '00000002-0000-0000-c000-000000000000',
-    prompt: 'login',
+    prompt: 'select_account',
     proxy: true,
     customHeaders: { 'User-Agent': 'avis-pp.bib.umontreal.ca' },
     passReqToCallback: true,
-    agent: proxyAgent,
-}, (req, accessToken, refreshToken, params, profile, done) => {
+    agent: proxyAgent, // Utilisation d'un proxy si nécessaire
+}, async (req, accessToken, refreshToken, params, profile, done) => {
     try {
-        let user = {};
-        if (params.id_token) {
-            user = jwt.decode(params.id_token, { complete: true });
-        }
+        // Optimisation de la gestion du jeton ID
+        const user = params.id_token ? jwt.decode(params.id_token, { complete: true }) : {};
 
+        // Informations utilisateur consolidées
         const userInfo = {
             accessToken,
             refreshToken,
-            profile: profile._json,
-            idToken: user ? user.payload : {},
+            profile: profile,
+            idToken: user?.payload || {},
         };
 
+        // Retour réussi
         return done(null, userInfo);
     } catch (error) {
+        console.error('Error in authentication strategy:', error);
         return done(error);
     }
 }));
 
+// Sérialisation utilisateur
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
+// Middleware de validation d'authentification
 const validateAuth = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect('/api/auth/login');
+    // Rediriger après l'authentification réussie
+    req.session.returnTo = req.originalUrl;
+    res.redirect('/api/auth/login'); // Redirection en cas d'échec
 };
 
+// Gestion des erreurs d'authentification
 const handleAuthError = (err, req, res, next) => {
-
-    // Gérer d'autres erreurs d'authentification
     console.error('Authentication error:', err);
     res.redirect('/api/auth/login');
 };
 
-module.exports = { passport, validateAuth, handleAuthError };
+module.exports = { passport, validateAuth, handleAuthError,proxyAgent };

@@ -1,7 +1,6 @@
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import SigninWithAzure from '@/components/auth/SignInWithAzure';
-import LoginIcon from '@mui/icons-material/Login';
 import Image from 'next/image';
 import logoImage from '@/images/biblio-logo.png'; // Import image
 

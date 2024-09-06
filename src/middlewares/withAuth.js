@@ -1,3 +1,4 @@
+//src/middlewares/withAuth.js
 import { withAuth as withAuthMiddleware } from 'next-auth/middleware'
 import { adminRoute } from '@/config/app'
 

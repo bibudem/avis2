@@ -33,6 +33,7 @@
     "https-proxy-agent": "^7.0.5",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "memorystore": "^1.6.7",
     "mongoose": "^7.3.2",
     "next": "^14.0.0",
     "next-auth": "^4.24.7",
@@ -41,8 +42,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.1",
-    "sass": "^1.77.8",
-    "sharp": "^0.33.5"
+    "sass": "^1.77.8"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
