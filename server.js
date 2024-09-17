@@ -15,13 +15,22 @@ const handle = nextApp.getRequestHandler();
 nextApp.prepare().then(() => {
     const server = express();
 
-    // Middleware pour gérer les en-têtes X-Forwarded-* si nécessaire
+    // Middleware to handle x-forwarded-* headers properly
     server.use((req, res, next) => {
-        req.headers['x-forwarded-host'] = req.headers['host'] || '';
+        if (!req.headers['x-forwarded-host']) {
+            req.headers['x-forwarded-host'] = req.headers['host'] || '';
+        }
+        // Fix pour éviter les doublons
+        if (req.headers['x-forwarded-host'].includes(',')) {
+            req.headers['x-forwarded-host'] = req.headers['x-forwarded-host'].split(',')[0].trim();
+        }
+
         req.headers['x-forwarded-proto'] = req.protocol;
         req.headers['x-forwarded-for'] = req.ip;
+
         next();
     });
+
 
     server.set('trust proxy', true);
 
@@ -33,7 +42,7 @@ nextApp.prepare().then(() => {
         secret: process.env.SESSION_SECRET || 'Avis4@b7!Kp$9mZ2^vLx&1Wq*R',
         resave: false,
         saveUninitialized: true,
-        cookie: { secure: true, maxAge: 10 * 60 * 6000 } // Durée d'expiration de 60 minutes
+        cookie: { secure: true, maxAge: 10 * 60 * 3000 } // Durée d'expiration de 30 minutes
     }));
 
     // Ajouter les données essentielles dans le cookie
@@ -59,7 +68,11 @@ nextApp.prepare().then(() => {
         pathRewrite: { '^/api/external': '/' },
         secure: false,
         agent: proxyAgent,
-        timeout: 30000
+        timeout: 30000,
+        onError: (err, req, res) => {
+            console.error('Proxy error:', err);
+            res.status(500).send('Proxy request failed');
+        }
     }));
 
     // Gestion des requêtes Next.js

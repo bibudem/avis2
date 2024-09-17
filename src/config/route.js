@@ -18,12 +18,12 @@ const sendRedirect = (res, url, data = null) => {
 
 // Route pour démarrer l'authentification
 router.get('/login', passport.authenticate('azure_oauth2', {
-    failureRedirect: '/error', // Rediriger vers une page d'erreur en cas d'échec
+    failureRedirect: '/api/auth/logout', // Rediriger vers une page d'erreur en cas d'échec
 }));
 
 // Route de callback pour Azure
 router.get('/callback/azure-ad',
-    passport.authenticate('azure_oauth2', { failureRedirect: '/login' }),
+    passport.authenticate('azure_oauth2', { failureRedirect: '/api/auth/logout' }),
     (req, res) => {
         if (req.isAuthenticated()) {
             // Déstructuration des informations utilisateur
@@ -59,7 +59,7 @@ router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {
             console.error('Logout error:', err);
-            return sendRedirect(res, '/error', { message: 'Failed to log out' });
+            return sendRedirect(res, '/api/auth/login', { message: 'Failed to log out' });
         }
 
         req.session.destroy((err) => {
