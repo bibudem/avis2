@@ -15,24 +15,17 @@ const handle = nextApp.getRequestHandler();
 nextApp.prepare().then(() => {
     const server = express();
 
-    // Middleware to handle x-forwarded-* headers properly
-    server.use((req, res, next) => {
-        if (!req.headers['x-forwarded-host']) {
-            req.headers['x-forwarded-host'] = req.headers['host'] || '';
-        }
-        // Fix pour éviter les doublons
-        if (req.headers['x-forwarded-host'].includes(',')) {
-            req.headers['x-forwarded-host'] = req.headers['x-forwarded-host'].split(',')[0].trim();
-        }
+    // Configurez trust proxy pour les en-têtes x-forwarded-*
+    server.set('trust proxy', 1);
 
+    // Middleware pour gérer les en-têtes x-forwarded-*
+    server.use((req, res, next) => {
+        // Assurez-vous que les en-têtes x-forwarded-* sont définis correctement
+        req.headers['x-forwarded-host'] = req.headers['host'] || '';
         req.headers['x-forwarded-proto'] = req.protocol;
         req.headers['x-forwarded-for'] = req.ip;
-
         next();
     });
-
-
-    server.set('trust proxy', true);
 
     // Configurez le store en mémoire
     const memoryStore = new MemoryStore();
@@ -41,18 +34,20 @@ nextApp.prepare().then(() => {
         store: memoryStore,
         secret: process.env.SESSION_SECRET || 'Avis4@b7!Kp$9mZ2^vLx&1Wq*R',
         resave: false,
-        saveUninitialized: true,
-        cookie: { secure: true, maxAge: 10 * 60 * 3000 } // Durée d'expiration de 30 minutes
+        saveUninitialized: false,
+        cookie: { secure: true, maxAge: 30 * 60 * 1000 } // Durée d'expiration de 30 minutes
     }));
 
-    // Ajouter les données essentielles dans le cookie
+    // Middleware pour définir le cookie userData
     server.use((req, res, next) => {
         if (req.session.userData) {
-            res.cookie('userData', JSON.stringify(req.session.userData), { httpOnly: true, secure: true });
+            res.cookie('userData', JSON.stringify(req.session.userData), {
+                httpOnly: true,
+                secure: !dev // Utiliser HTTPS uniquement en production
+            });
         }
         next();
     });
-
 
     // Initialisation de Passport
     server.use(passport.initialize());
@@ -68,7 +63,7 @@ nextApp.prepare().then(() => {
         pathRewrite: { '^/api/external': '/' },
         secure: false,
         agent: proxyAgent,
-        timeout: 30000,
+        timeout: 10000,
         onError: (err, req, res) => {
             console.error('Proxy error:', err);
             res.status(500).send('Proxy request failed');

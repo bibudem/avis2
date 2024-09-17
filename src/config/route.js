@@ -17,13 +17,24 @@ const sendRedirect = (res, url, data = null) => {
 };
 
 // Route pour démarrer l'authentification
-router.get('/login', passport.authenticate('azure_oauth2', {
-    failureRedirect: '/api/auth/logout', // Rediriger vers une page d'erreur en cas d'échec
-}));
+router.get('/login', (req, res, next) => {
+    // Détruire la session en cours
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Session destruction error:', err);
+            return sendRedirect(res, '/api/auth/login', { message: 'Failed to destroy session' });
+        }
+
+        // Initialiser l'authentification après la destruction de la session
+        passport.authenticate('azure_oauth2', {
+            failureRedirect: '/api/auth/login', // Rediriger vers une page d'erreur en cas d'échec
+        })(req, res, next);
+    });
+});
 
 // Route de callback pour Azure
 router.get('/callback/azure-ad',
-    passport.authenticate('azure_oauth2', { failureRedirect: '/api/auth/logout' }),
+    passport.authenticate('azure_oauth2', { failureRedirect: '/api/auth/login' }),
     (req, res) => {
         if (req.isAuthenticated()) {
             // Déstructuration des informations utilisateur
@@ -37,7 +48,6 @@ router.get('/callback/azure-ad',
 
             // Sauvegarde des informations utilisateur dans la session
             req.session.userData = sessionData;
-            //console.log(req.session.userData);
 
             req.session.save((err) => {
                 if (err) {

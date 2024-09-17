@@ -21,11 +21,10 @@ passport.use(new AzureOAuth2Strategy({
     tenant: AZURE_AD_TENANT_ID,
     resource: '00000002-0000-0000-c000-000000000000',
     prompt: 'select_account',
+    state: false,
     proxy: true,
-    customHeaders: { 'User-Agent': 'avis-pp.bib.umontreal.ca' },
-    passReqToCallback: true,
-    agent: proxyAgent, // Utilisation d'un proxy si nécessaire
-}, async (req, accessToken, refreshToken, params, profile, done) => {
+    agent: proxyAgent
+}, async (accessToken, refreshToken, params, profile, done) => {
     try {
         // Optimisation de la gestion du jeton ID
         const user = params.id_token ? jwt.decode(params.id_token, { complete: true }) : {};
@@ -34,7 +33,7 @@ passport.use(new AzureOAuth2Strategy({
         const userInfo = {
             accessToken,
             refreshToken,
-            profile: profile,
+            profile,
             idToken: user?.payload || {},
         };
 
@@ -66,4 +65,4 @@ const handleAuthError = (err, req, res, next) => {
     res.redirect('/api/auth/login');
 };
 
-module.exports = { passport, validateAuth, handleAuthError,proxyAgent };
+module.exports = { passport, validateAuth, handleAuthError, proxyAgent };

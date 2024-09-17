@@ -8,7 +8,7 @@ export async function middleware(request) {
 
     if (pathname.startsWith('/admin')) {
         const session = userData ? JSON.parse(userData) : null;
-         console.log(session);
+         //console.log(session);
         // Rediriger vers la page de connexion si aucune session n'est trouvée
         if (!session) {
             return NextResponse.redirect(new URL('/api/auth/logout', request.url));

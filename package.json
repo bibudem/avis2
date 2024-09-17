@@ -27,7 +27,7 @@
     "ckeditor5": "^39.0.1",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "express-session": "^1.18.0",
     "http-proxy-middleware": "^3.0.0",
     "https-proxy-agent": "^7.0.5",
