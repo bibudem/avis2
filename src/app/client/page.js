@@ -7,20 +7,33 @@ const ClientPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        try {
-            const storedSession = localStorage.getItem('session');
-            if (storedSession) {
-                const data = JSON.parse(storedSession);
-                setSession(data);
-            } else {
-                // Si aucune session n'est trouvée, rediriger vers la page de connexion
-                window.location.href = '/api/auth/login';
+        const fetchSessionData = async () => {
+            try {
+                const response = await fetch('/api/auth/user', {
+                    credentials: 'include' // Important pour inclure les cookies
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setSession(data);
+                } else if (response.status === 401) {
+                    // Si non authentifié, rediriger vers la page de connexion
+                    window.location.href = '/api/auth/login';
+                } else {
+                    throw new Error('Failed to fetch session data');
+                }
+            } catch (err) {
+                console.error('Error fetching session data:', err);
+                setError(err);
             }
-        } catch (err) {
-            console.log(err); // Log the error to the console
-            setError(err); // Set the error to handle it if needed later
-        }
+        };
+
+        fetchSessionData();
     }, []);
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     return (
         <div>
@@ -32,7 +45,7 @@ const ClientPage = () => {
                     <p><strong>Given Name:</strong> {session.givenName}</p>
                 </div>
             ) : (
-                <p>No session data available</p>
+                <p>Loading session data...</p>
             )}
         </div>
     );

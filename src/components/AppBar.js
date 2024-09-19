@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { AppBar as MuiAppBar,  Toolbar, Box, IconButton, Menu, MenuItem, Typography, ListItemIcon } from '@mui/material';
+import { AppBar as MuiAppBar, Toolbar, Box, IconButton, Menu, MenuItem, Typography, ListItemIcon } from '@mui/material';
 import Link from "next/link";
 import Image from 'next/image';
 import logoImage from '@/images/biblio-logo-sans.png';
 import Logout from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
+
 
 export default function AppBar() {
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -29,17 +30,41 @@ export default function AppBar() {
   useEffect(() => {
     const storedSession = localStorage.getItem('session');
 
-    const currentUrl = window.location.pathname;
     if (storedSession) {
+      // Si les données de session sont présentes dans localStorage, on les utilise
       const { givenName, familyName } = JSON.parse(storedSession);
       setNameUser(`${givenName} ${familyName}`);
-    } else if (currentUrl !== '/signin') {
-      window.location.href = '/signin';
+    } else {
+      const currentUrl = window.location.pathname;
+      if (currentUrl !== '/signin') {
+      // Sinon, on effectue un fetch pour les récupérer
+        const fetchSessionData = async () => {
+          try {
+            const response = await fetch('/api/auth/user');
+            if (!response.ok) {
+              // Si la réponse n'est pas ok, rediriger vers /signin
+              console.error('Erreur lors de la récupération des données de session, redirection vers /signin');
+              window.location.href = '/signin'; // Redirection vers /signin
+              return;
+            }
+
+            const data = await response.json();
+            const { givenName, familyName } = data;
+            setNameUser(`${givenName} ${familyName}`);
+
+            // Stocker les données dans localStorage pour les prochaines fois
+            localStorage.setItem('session', JSON.stringify(data));
+          } catch (error) {
+            console.error(error);
+          }
+        };
+      fetchSessionData();
+      }
     }
   }, []);
 
   return (
-      <MuiAppBar position="static" style={{ background: '#0b113a'}}>
+      <MuiAppBar position="static" style={{ background: '#0b113a' }}>
         <Toolbar>
           <Link href="/admin" passHref>
             <Image
@@ -84,8 +109,7 @@ export default function AppBar() {
                   </Menu>
                 </>
             ) : (
-                <IconButton onClick={() => window.location.href = '/api/auth/login'} sx={{ p: 0 }}>
-                </IconButton>
+                <IconButton onClick={() => window.location.href = '/api/auth/login'} sx={{ p: 0 }} />
             )}
           </Box>
         </Toolbar>

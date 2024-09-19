@@ -21,25 +21,24 @@ passport.use(new AzureOAuth2Strategy({
     tenant: AZURE_AD_TENANT_ID,
     resource: '00000002-0000-0000-c000-000000000000',
     prompt: 'select_account',
-    state: false,
-    proxy: true,
-    agent: proxyAgent
+    state: false
 }, async (accessToken, refreshToken, params, profile, done) => {
     try {
-        // Optimisation de la gestion du jeton ID
-        const user = params.id_token ? jwt.decode(params.id_token, { complete: true }) : {};
-
-        // Informations utilisateur consolidées
+        if (!params.id_token) {
+            return done(new Error('No ID token received from Azure AD'));
+        }
+        const user = jwt.decode(params.id_token, { complete: true });
+        if (!user || !user.payload) {
+            return done(new Error('Invalid ID token received'));
+        }
         const userInfo = {
             accessToken,
             refreshToken,
             profile,
-            idToken: user?.payload || {},
+            idToken: user.payload,
         };
-
-        // Retour réussi
         return done(null, userInfo);
-    } catch (error) {
+    }  catch (error) {
         console.error('Error in authentication strategy:', error);
         return done(error);
     }
