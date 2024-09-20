@@ -8,11 +8,9 @@ const {
     AZURE_AD_CLIENT_SECRET,
     AZURE_AD_TENANT_ID,
     Azure_callbackURL,
-    proxyUrl
+    proxyUrl,
+    proxyIp
 } = require('./oauthConfig');
-
-// Créez l'agent proxy une seule fois pour éviter des créations inutiles
-const proxyAgent = new HttpsProxyAgent(proxyUrl);
 
 passport.use(new AzureOAuth2Strategy({
     clientID: AZURE_AD_CLIENT_ID,
@@ -45,8 +43,25 @@ passport.use(new AzureOAuth2Strategy({
 }));
 
 // Sérialisation utilisateur
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+passport.serializeUser((user, done) => {
+    try {
+        done(null, user);
+    } catch (err) {
+        console.error('Error during user serialization:', err);
+        done(err);
+    }
+});
+
+// Désérialisation utilisateur
+passport.deserializeUser((user, done) => {
+    try {
+        done(null, user);
+    } catch (err) {
+        console.error('Error during user deserialization:', err);
+        done(err);
+    }
+});
+
 
 // Middleware de validation d'authentification
 const validateAuth = (req, res, next) => {
@@ -64,4 +79,4 @@ const handleAuthError = (err, req, res, next) => {
     res.redirect('/api/auth/login');
 };
 
-module.exports = { passport, validateAuth, handleAuthError, proxyAgent };
+module.exports = { passport, validateAuth, handleAuthError, proxyUrl, proxyIp };

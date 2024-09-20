@@ -36,6 +36,7 @@
     "memorystore": "^1.6.7",
     "mongoose": "^7.3.2",
     "next": "^14.2.12",
+    "node-global-proxy": "^1.0.1",
     "passport": "^0.7.0",
     "passport-azure-oauth2": "^0.1.0",
     "react": "^18.2.0",

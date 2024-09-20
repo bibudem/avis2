@@ -1,81 +1,82 @@
 const express = require('express');
 const session = require('express-session');
-const { passport, proxyAgent } = require('./src/config/passport');
+const { passport, proxyUrl, proxyIp } = require('./src/config/passport');
 const authRoutes = require('./src/config/route');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const next = require('next');
 const MemoryStore = require('memorystore')(session);
+const proxy = require('node-global-proxy').default;
 
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
+const port = process.env.PORT || 8186;
 
+// Configuration globale du proxy
+proxy.setConfig(proxyUrl);
+proxy.start();
+
+// Préparer l'application Next.js et démarrer le serveur
 nextApp.prepare().then(() => {
     const server = express();
 
-    server.set('trust proxy', 1);
+    // Définir le proxy de confiance
+    server.set('trust proxy', proxyIp);
 
+    // Middleware pour définir les en-têtes "forwarded" (hôte, protocole, IP)
     server.use((req, res, next) => {
-        req.headers['x-forwarded-host'] = req.headers['host'] || '';
-        req.headers['x-forwarded-proto'] = req.protocol;
-        req.headers['x-forwarded-for'] = req.ip;
+        const { host, protocol, ip } = req;
+        req.headers['x-forwarded-host'] = host || '';
+        req.headers['x-forwarded-proto'] = protocol;
+        req.headers['x-forwarded-for'] = ip;
         next();
     });
 
-    const memoryStore = new MemoryStore({
-        checkPeriod: 3600000 // expired entries every 1 h
-    });
-
+    // Configuration de la session avec MemoryStore pour stocker les sessions en mémoire
     server.use(session({
-        store: memoryStore,
+        store: new MemoryStore({ checkPeriod: 86400000 }), // Nettoie les entrées expirées toutes les 24h
         secret: process.env.SESSION_SECRET || 'Avis4@b7!Kp$9mZ2^vLx&1Wq*R',
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: !dev,
-            maxAge: 30 * 60 * 1000 // 30 minutes
+            secure: !dev, // Utilise des cookies sécurisés uniquement en production
+            maxAge: 30 * 60 * 1000 // Durée de vie des cookies : 30 minutes
         }
     }));
 
+    // Initialisation de Passport pour l'authentification
     server.use(passport.initialize());
     server.use(passport.session());
 
+    // Middleware pour définir le cookie 'userData' si présent dans la session
     server.use((req, res, next) => {
-        if (req.session.userData) {
+        if (req.session?.userData) {
             res.cookie('userData', JSON.stringify(req.session.userData), {
                 httpOnly: true,
-                secure: !dev,
+                secure: !dev, // Utilise des cookies sécurisés uniquement en production
                 maxAge: 30 * 60 * 1000 // 30 minutes
             });
         }
         next();
     });
 
+    // Routes d'authentification
     server.use('/api/auth', authRoutes);
 
-    // Configuration du proxy pour toutes les requêtes API
-    server.use('/api/auth', createProxyMiddleware({
-        target: 'https://avis-pp.bib.umontreal.ca',
-        changeOrigin: true,
-        ws: true,
-        pathRewrite: { '^/api/': '/' },
-        secure: true,
-        agent: proxyAgent,
-        timeout: 20000, // 20 secondes
-        onError: (err, req, res) => {
-            console.error('Proxy error:', err);
-            res.status(500).send('Proxy request failed');
-        }
-    }));
-
+    // Gestionnaire de requêtes pour toutes les autres routes avec Next.js
     server.all('*', (req, res) => handle(req, res));
 
-    const port = process.env.PORT || 8186;
+    // Middleware de gestion des erreurs
+    server.use((err, req, res, next) => {
+        console.error('Erreur :', err);
+        res.status(500).json({ error: 'Une erreur inattendue est survenue' });
+    });
+
+    // Démarrage du serveur
     server.listen(port, (err) => {
         if (err) throw err;
-        console.log(`Server running on port ${port}`);
+        console.log(`Serveur en cours d'exécution sur le port ${port}`);
     });
 }).catch(err => {
-    console.error(`[${new Date().toISOString()}] Error preparing Next.js app: ${err.message}`);
+    console.error(`[${new Date().toISOString()}] Erreur lors de la préparation de l'application Next.js : ${err.message}`);
     process.exit(1);
 });
