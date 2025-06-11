@@ -31,6 +31,15 @@ nextApp.prepare().then(() => {
         next();
     });
 
+     // Middleware personnalisé pour gérer manuellement les en-têtes CORS
+    server.use((req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        next();
+    });
+
     // Configuration de la session avec MemoryStore pour stocker les sessions en mémoire
     server.use(session({
         store: new MemoryStore({ checkPeriod: 86400000 }), // Nettoie les entrées expirées toutes les 24h
@@ -38,7 +47,7 @@ nextApp.prepare().then(() => {
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: !dev, // Utilise des cookies sécurisés uniquement en production
+            secure: !dev,
             maxAge: 30 * 60 * 1000 // Durée de vie des cookies : 30 minutes
         }
     }));
