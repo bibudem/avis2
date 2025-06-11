@@ -10,6 +10,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 const port = process.env.PORT || 8186;
+const { secretSession} = require('./src/config/oauthConfig');
 
 // Configuration globale du proxy
 proxy.setConfig(proxyUrl);
@@ -43,7 +44,7 @@ nextApp.prepare().then(() => {
     // Configuration de la session avec MemoryStore pour stocker les sessions en mémoire
     server.use(session({
         store: new MemoryStore({ checkPeriod: 86400000 }), // Nettoie les entrées expirées toutes les 24h
-        secret: process.env.SESSION_SECRET || 'Avis4@b7!Kp$9mZ2^vLx&1Wq*R',
+        secret: process.env.SESSION_SECRET || secretSession,
         resave: false,
         saveUninitialized: false,
         cookie: {
