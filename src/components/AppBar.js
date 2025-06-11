@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { AppBar as MuiAppBar, Toolbar, Box, IconButton, Menu, MenuItem, Typography, ListItemIcon } from '@mui/material';
 import Link from "next/link";
 import Image from 'next/image';
-import logoImage from '@/images/biblio-logo-sans.png';
+import logoImage from '@/images/biblio-logo.png';
 import Logout from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 
@@ -37,7 +37,7 @@ export default function AppBar() {
     } else {
       const currentUrl = window.location.pathname;
       if (currentUrl !== '/signin') {
-      // Sinon, on effectue un fetch pour les récupérer
+        // Sinon, on effectue un fetch pour les récupérer
         const fetchSessionData = async () => {
           try {
             const response = await fetch('/api/auth/user');
@@ -58,13 +58,13 @@ export default function AppBar() {
             console.error(error);
           }
         };
-      fetchSessionData();
+        fetchSessionData();
       }
     }
   }, []);
 
   return (
-      <MuiAppBar position="static" style={{ background: '#0b113a' }}>
+      <MuiAppBar position="static" style={{ background: '#fffbfe' }}>
         <Toolbar>
           <Link href="/admin" passHref>
             <Image
@@ -73,16 +73,13 @@ export default function AppBar() {
                 style={{ cursor: 'pointer', width: '100%', height:'45px' }}
             />
           </Link>
-          <Typography variant="h6" noWrap component="div" style={{ marginLeft:'10px' }}>
-            Avis
-          </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box>
             {nameUser ? (
                 <>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <PersonIcon sx={{ bgcolor: 'white', color: 'secondary' }} />
-                    <Typography variant="body1" sx={{ ml: 1, color: 'white' }}>
+                    <Typography variant="body1" sx={{ ml: 1, color: '#0B113A' }}>
                       {nameUser}
                     </Typography>
                   </IconButton>
