@@ -1,84 +1,91 @@
 const express = require('express');
 const session = require('express-session');
-const passport = require('./src/config/passport').passport;
-const proxyAgent = require('./src/config/passport').proxyAgent;
+const { passport, proxyUrl, proxyIp } = require('./src/config/passport');
 const authRoutes = require('./src/config/route');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const next = require('next');
 const MemoryStore = require('memorystore')(session);
+const proxy = require('node-global-proxy').default;
 
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
+const port = process.env.PORT || 8186;
 
+// Configuration globale du proxy
+proxy.setConfig(proxyUrl);
+proxy.start();
 
+// Préparer l'application Next.js et démarrer le serveur
 nextApp.prepare().then(() => {
     const server = express();
 
-    // Configurez trust proxy pour les en-têtes x-forwarded-*
-    server.set('trust proxy', 1);
+    // Définir le proxy de confiance
+    server.set('trust proxy', proxyIp);
 
-    // Middleware pour gérer les en-têtes x-forwarded-*
+    // Middleware pour définir les en-têtes "forwarded" (hôte, protocole, IP)
     server.use((req, res, next) => {
-        // Assurez-vous que les en-têtes x-forwarded-* sont définis correctement
-        req.headers['x-forwarded-host'] = req.headers['host'] || '';
-        req.headers['x-forwarded-proto'] = req.protocol;
-        req.headers['x-forwarded-for'] = req.ip;
+        const { host, protocol, ip } = req;
+        req.headers['x-forwarded-host'] = host || '';
+        req.headers['x-forwarded-proto'] = protocol;
+        req.headers['x-forwarded-for'] = ip;
         next();
     });
 
-    // Configurez le store en mémoire
-    const memoryStore = new MemoryStore();
+     // Middleware personnalisé pour gérer manuellement les en-têtes CORS
+    server.use((req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        next();
+    });
 
+    // Configuration de la session avec MemoryStore pour stocker les sessions en mémoire
     server.use(session({
-        store: memoryStore,
+        store: new MemoryStore({ checkPeriod: 86400000 }), // Nettoie les entrées expirées toutes les 24h
         secret: process.env.SESSION_SECRET || 'Avis4@b7!Kp$9mZ2^vLx&1Wq*R',
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: true, maxAge: 30 * 60 * 1000 } // Durée d'expiration de 30 minutes
+        cookie: {
+            secure: !dev,
+            maxAge: 30 * 60 * 1000 // Durée de vie des cookies : 30 minutes
+        }
     }));
 
-    // Middleware pour définir le cookie userData
+    // Initialisation de Passport pour l'authentification
+    server.use(passport.initialize());
+    server.use(passport.session());
+
+    // Middleware pour définir le cookie 'userData' si présent dans la session
     server.use((req, res, next) => {
-        if (req.session.userData) {
+        if (req.session?.userData) {
             res.cookie('userData', JSON.stringify(req.session.userData), {
                 httpOnly: true,
-                secure: !dev // Utiliser HTTPS uniquement en production
+                secure: !dev, // Utilise des cookies sécurisés uniquement en production
+                maxAge: 30 * 60 * 1000 // 30 minutes
             });
         }
         next();
     });
 
-    // Initialisation de Passport
-    server.use(passport.initialize());
-    server.use(passport.session());
-
-    // Register routes and middleware in appropriate order
+    // Routes d'authentification
     server.use('/api/auth', authRoutes);
 
-    // Middleware de proxy pour les API externes
-    server.use('/api/external', createProxyMiddleware({
-        target: 'https://avis-pp.bib.umontreal.ca',
-        changeOrigin: true,
-        pathRewrite: { '^/api/external': '/' },
-        secure: false,
-        agent: proxyAgent,
-        timeout: 10000,
-        onError: (err, req, res) => {
-            console.error('Proxy error:', err);
-            res.status(500).send('Proxy request failed');
-        }
-    }));
-
-    // Gestion des requêtes Next.js
+    // Gestionnaire de requêtes pour toutes les autres routes avec Next.js
     server.all('*', (req, res) => handle(req, res));
 
+    // Middleware de gestion des erreurs
+    server.use((err, req, res, next) => {
+        console.error('Erreur :', err);
+        res.status(500).json({ error: 'Une erreur inattendue est survenue' });
+    });
+
     // Démarrage du serveur
-    const port = process.env.PORT || 8186;
     server.listen(port, (err) => {
         if (err) throw err;
-        console.log(`Server running on port ${port}`);
+        console.log(`Serveur en cours d'exécution sur le port ${port}`);
     });
 }).catch(err => {
-    console.error(`[${new Date().toISOString()}] Error preparing Next.js app: ${err.message}`);
+    console.error(`[${new Date().toISOString()}] Erreur lors de la préparation de l'application Next.js : ${err.message}`);
+    process.exit(1);
 });

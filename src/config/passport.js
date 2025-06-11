@@ -8,11 +8,9 @@ const {
     AZURE_AD_CLIENT_SECRET,
     AZURE_AD_TENANT_ID,
     Azure_callbackURL,
-    proxyUrl
+    proxyUrl,
+    proxyIp
 } = require('./oauthConfig');
-
-// Créez l'agent proxy une seule fois pour éviter des créations inutiles
-const proxyAgent = new HttpsProxyAgent(proxyUrl);
 
 passport.use(new AzureOAuth2Strategy({
     clientID: AZURE_AD_CLIENT_ID,
@@ -21,33 +19,49 @@ passport.use(new AzureOAuth2Strategy({
     tenant: AZURE_AD_TENANT_ID,
     resource: '00000002-0000-0000-c000-000000000000',
     prompt: 'select_account',
-    state: false,
-    proxy: true,
-    agent: proxyAgent
+    state: false
 }, async (accessToken, refreshToken, params, profile, done) => {
     try {
-        // Optimisation de la gestion du jeton ID
-        const user = params.id_token ? jwt.decode(params.id_token, { complete: true }) : {};
-
-        // Informations utilisateur consolidées
+        if (!params.id_token) {
+            return done(new Error('No ID token received from Azure AD'));
+        }
+        const user = jwt.decode(params.id_token, { complete: true });
+        if (!user || !user.payload) {
+            return done(new Error('Invalid ID token received'));
+        }
         const userInfo = {
             accessToken,
             refreshToken,
             profile,
-            idToken: user?.payload || {},
+            idToken: user.payload,
         };
-
-        // Retour réussi
         return done(null, userInfo);
-    } catch (error) {
+    }  catch (error) {
         console.error('Error in authentication strategy:', error);
         return done(error);
     }
 }));
 
 // Sérialisation utilisateur
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+passport.serializeUser((user, done) => {
+    try {
+        done(null, user);
+    } catch (err) {
+        console.error('Error during user serialization:', err);
+        done(err);
+    }
+});
+
+// Désérialisation utilisateur
+passport.deserializeUser((user, done) => {
+    try {
+        done(null, user);
+    } catch (err) {
+        console.error('Error during user deserialization:', err);
+        done(err);
+    }
+});
+
 
 // Middleware de validation d'authentification
 const validateAuth = (req, res, next) => {
@@ -65,4 +79,4 @@ const handleAuthError = (err, req, res, next) => {
     res.redirect('/api/auth/login');
 };
 
-module.exports = { passport, validateAuth, handleAuthError, proxyAgent };
+module.exports = { passport, validateAuth, handleAuthError, proxyUrl, proxyIp };

@@ -1,28 +1,7 @@
-"use client";
-
-import { useEffect, useState } from 'react';
 import { Container, Typography, Box } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const NotAccessPage = () => {
-    const [session, setSession] = useState(null);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        try {
-            const storedSession = localStorage.getItem('session');
-            if (storedSession) {
-                const data = JSON.parse(storedSession);
-                setSession(data);
-            } else {
-                // Si aucune session n'est trouvée, rediriger vers la page de connexion
-                window.location.href = '/api/auth/login';
-            }
-        } catch (err) {
-            console.log(err);
-            setError(err);
-        }
-    }, []);
 
     return (
         <Container maxWidth="sm" sx={{ textAlign: 'center', marginTop: '50px' }}>

@@ -40,7 +40,8 @@ next-env.d.ts
 
 /src/config/oauthConfig.js
 
-.idea
+.idea/
+
 .next
 logs
 package-lock.json

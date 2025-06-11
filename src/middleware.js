@@ -1,3 +1,4 @@
+//src/middleware.js
 import { NextResponse } from 'next/server';
 import cookie from 'cookie';
 
