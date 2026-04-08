@@ -18,6 +18,15 @@ export async function GET(request) {
     await dbConnect()
 
     const avis = await Avis.findOne({ active: true })
+    // Vérification unique et explicite de l'absence d'avis
+    if (!avis) {
+      // Renvoyer un JSON valide même quand il n'y a pas d'avis
+      return NextResponse.json({ 
+        success: true, 
+        data: null,
+        message: 'No active avis found'
+      }, { status: 200 })
+    }
 
     if (avis) {
       if (request.nextUrl.pathname.endsWith('/site-web/important')) {
@@ -26,6 +35,7 @@ export async function GET(request) {
         return respond(avis, { accept: textHtml })
 
       }
+      
 
       return respond(avis, { accept: request.headers.get('accept') })
 
